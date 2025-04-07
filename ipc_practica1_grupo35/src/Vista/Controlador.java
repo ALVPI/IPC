@@ -9,6 +9,10 @@ import Vista.Vista;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 /**
  *
  * @author Alvlope y Pascual
@@ -29,6 +33,7 @@ public class Controlador {
         }
         this.vista = vista;
         gestor = new GestorTareas();
+        loadTareasPorDefecto();
         setTareas();
 
     }
@@ -143,6 +148,17 @@ public class Controlador {
             nombreTareaEditando = nombre;
         }
     }
-
+    private void loadTareasPorDefecto() {
+        Tarea t1 = new Tarea("TE 1", "Realizar un a", new Date(05/03/2025), "Alta", false, "50");
+        Tarea t2 = new Tarea("Lectura", "Leer un artículo sobre el uso de deshacer para el tratamiento de errores.", new Date(11/03/2025), "Baja", true, "100");
+        Tarea t3 = new Tarea("Boceto", "Realizar bocetos de la práctica 2", new Date(30/03/2025), "Alta", false, "25");
+        Tarea t4 = new Tarea("TE 2", "Realizar una aplicación web", new Date(28/04/2025), "Media", true, "100");
+        gestor.addTarea(t1);
+        gestor.addTarea(t2);
+        gestor.addTarea(t3);
+        gestor.addTarea(t4);
+    }
+    
+    
 
 }   

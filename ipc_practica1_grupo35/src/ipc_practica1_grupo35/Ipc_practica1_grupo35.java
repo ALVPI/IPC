@@ -4,6 +4,7 @@
  */
 package ipc_practica1_grupo35;
 import Vista.Vista;
+import Vista.MenuInicial;
 import java.util.*;
 /**
  *
@@ -28,8 +29,10 @@ public class Ipc_practica1_grupo35 {
         }
 
         //Controlador controlador = new Controlador();
-        Vista vista = new Vista();
-        vista.setVisible(true);
+        //Vista vista = new Vista();
+        //vista.setVisible(true);
+        MenuInicial menu = new MenuInicial();
+        menu.setVisible(true);
     }
     
 }
