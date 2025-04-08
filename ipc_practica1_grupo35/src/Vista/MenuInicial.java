@@ -116,6 +116,8 @@ public class MenuInicial extends javax.swing.JFrame {
 
     private void EditarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarListaActionPerformed
         VentanaListaTareas editar = new VentanaListaTareas();
+        ControladorListaTarea controlador = new ControladorListaTarea(editar);
+        editar.setControlador(controlador);  // 🔁 Aquí conectamos la lógica con la vista
         editar.setVisible(true);
     }//GEN-LAST:event_EditarListaActionPerformed
 

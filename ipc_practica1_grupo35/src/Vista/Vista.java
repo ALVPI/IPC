@@ -11,6 +11,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import java.awt.event.*;
 /**
  *
  * @author alvpi y Pascual
@@ -24,7 +25,13 @@ public class Vista extends javax.swing.JFrame {
         initComponents();
         controlador = new Controlador(this);
         jPanel13.setVisible(false);
-        
+        //Permite volver al menu inicial
+        Volver.setLabel("Volver");
+        Volver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VolverActionPerformed(evt);
+            }
+        }); 
         //Permite desplazase por los campos con solo el tab
         jTextArea1.setFocusTraversalKeys(
         KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
@@ -53,6 +60,15 @@ public class Vista extends javax.swing.JFrame {
         setSize(860,650);
         //Para que aparezca en el centro de la pantalla
         setLocationRelativeTo(null);
+        //Boton de volver
+        Volver.setLabel("Volver");
+        Volver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VolverActionPerformed(evt);
+            }
+        });
+
+
         
 
     }
@@ -85,6 +101,7 @@ public class Vista extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jCheckBox1 = new javax.swing.JCheckBox();
         jPanel8 = new javax.swing.JPanel();
+        Volver = new java.awt.Button();
         jButton1 = new javax.swing.JButton();
         jPanel10 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
@@ -170,6 +187,14 @@ public class Vista extends javax.swing.JFrame {
         jPanel7.add(jCheckBox1);
 
         jPanel2.add(jPanel7);
+
+        Volver.setLabel("Volver");
+        Volver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VolverActionPerformed(evt);
+            }
+        });
+        jPanel8.add(Volver);
 
         jButton1.setText("Guardar");
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
@@ -289,6 +314,12 @@ public class Vista extends javax.swing.JFrame {
         controlador.prepararEdicion();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void VolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolverActionPerformed
+
+        this.dispose(); // Cierra la vista actual
+        new MenuInicial().setVisible(true); // Abre el menú principal 
+    }//GEN-LAST:event_VolverActionPerformed
+
     public String getTareaActiva() {
         return jList1.getSelectedValue();
     }
@@ -368,12 +399,14 @@ public class Vista extends javax.swing.JFrame {
         dialog.setVisible(true);
         //Cerramos el popup en ms 
         new javax.swing.Timer(350, e -> dialog.dispose()).start();
-    }
-
+    }  
+    
+    
     
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private java.awt.Button Volver;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

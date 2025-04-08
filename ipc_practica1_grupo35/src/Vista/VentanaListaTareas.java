@@ -7,7 +7,8 @@ import Modelo.Tarea;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.time.LocalDate;
+import java.awt.event.*;
+
 import java.util.Date;
 
 /**
@@ -16,13 +17,45 @@ import java.util.Date;
  */
 public class VentanaListaTareas extends javax.swing.JFrame {
     //Variables privadas necesarias para que funcione el sistema 
-    private Map<String, ArrayList<Tarea>> listaTareas = new HashMap<>();
-    private String listaDefault = "IPC";
+    private ControladorListaTarea controlador;
+    
     /**
      * Creates new form EditarListaTareas
      */
-    public VentanaListaTareas() {
+    public VentanaListaTareas() {   
+        
+       
         initComponents();
+        //Boton de volver
+        Volver.setLabel("Volver");
+        Volver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VolverActionPerformed(evt);
+            }
+        });
+        //Para el buscador
+        Buscador.setText("Buscar tarea...");
+        Buscador.setForeground(java.awt.Color.GRAY);
+           
+        Buscador.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            //Cuando esta escribiendo 
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (Buscador.getText().equals("Buscar tarea...")) {
+                    Buscador.setText("");
+                    Buscador.setForeground(java.awt.Color.BLACK);
+                }
+            }
+               //Cuando no esta escribiendo 
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (Buscador.getText().trim().isEmpty()) {
+                    Buscador.setText("Buscar tarea...");
+                    Buscador.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+
     }
 
     /**
@@ -50,6 +83,7 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         Gráfico = new javax.swing.JPanel();
         CompletadoTotal = new javax.swing.JProgressBar();
         label3 = new java.awt.Label();
+        Volver = new java.awt.Button();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -145,6 +179,8 @@ public class VentanaListaTareas extends javax.swing.JFrame {
                 .addGap(25, 25, 25))
         );
 
+        Volver.setLabel("Volver");
+
         javax.swing.GroupLayout LeftLayout = new javax.swing.GroupLayout(Left);
         Left.setLayout(LeftLayout);
         LeftLayout.setHorizontalGroup(
@@ -155,8 +191,14 @@ public class VentanaListaTareas extends javax.swing.JFrame {
                     .addComponent(Buscador, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(ListaGeneral, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(LeftLayout.createSequentialGroup()
-                        .addComponent(MostrarFechaActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                        .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(LeftLayout.createSequentialGroup()
+                                .addComponent(MostrarFechaActual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(LeftLayout.createSequentialGroup()
+                                .addGap(33, 33, 33)
+                                .addComponent(Volver, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)))
                         .addComponent(Gráfico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(8, 8, 8)))
                 .addContainerGap())
@@ -170,11 +212,13 @@ public class VentanaListaTareas extends javax.swing.JFrame {
                 .addComponent(ListaGeneral, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(LeftLayout.createSequentialGroup()
-                        .addGap(69, 69, 69)
-                        .addComponent(MostrarFechaActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(LeftLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Gráfico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Gráfico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(LeftLayout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(MostrarFechaActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(38, 38, 38)
+                        .addComponent(Volver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(17, 17, 17))
         );
 
@@ -214,22 +258,102 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VentanaListaTareas().setVisible(true);
+               VentanaListaTareas ventana = new VentanaListaTareas();
+                ControladorListaTarea controlador = new ControladorListaTarea(ventana);
+                ventana.setControlador(controlador);
+                ventana.setVisible(true);
             }
         });
     }
-    //Inicializamos las tareas en la lista IPC por defecto
-    private void inicializarDatosPorDefecto() {
-        ArrayList<Tarea> ipc = new ArrayList<>();
+    public void setControlador(ControladorListaTarea controlador) {
+        this.controlador = controlador;
+        inicializarVista(); 
+    }
+    
+    public void inicializarVista() {
+        // 1. Mostrar las listas en el combo
+        SeleccionarLista.removeAllItems();
+        for (String nombre : controlador.obtenerNombresListas()) {
+            SeleccionarLista.addItem(nombre);
+        }
 
-        ipc.add(new Tarea("TE 1", "Realizar un análisis de una aplicación.", Localdate.of(5,3,2025), "Alta", false, 50));
-        ipc.add(new Tarea("Lectura", "Leer un artículo sobre el uso de deshacer para el tratamiento de errores.", LocalDate.of(11,3,2025), "Baja", true, 100));
-        ipc.add(new Tarea("Boceto", "Realizar un boceto de la práctica 2.", LocalDate.of(30, 3, 2025), "Alta", false, 25));
-        ipc.add(new Tarea("TE 2", "Realizar una aplicación web.", LocalDate.of(28, 4, 2025), "Media", true, 100));
+        // 2. Mostrar tareas pendientes de la primera lista ("IPC")
+        String listaSeleccionada = "IPC";
+        SeleccionarLista.setSelectedItem(listaSeleccionada);
 
-        listasTareas.put("IPC", ipc);
-        listaActual = "IPC";
-}
+        list1.removeAll();
+        for (Tarea t : controlador.obtenerTareasPendientes(listaSeleccionada)) {
+            long dias = controlador.calcularDiasRestantes(t);
+            list1.add(t.getNombre() + " (Faltan " + dias + " días)");
+        }
+
+        // 3. Barra de progreso de tareas completadas
+        int total = controlador.obtenerTareasLista(listaSeleccionada).size();
+        int completadas = controlador.contarCompletadas(listaSeleccionada);
+        Completadas.setMaximum(total);
+        Completadas.setValue(completadas);
+        Completadas.setStringPainted(true);
+        Completadas.setString(completadas + " de " + total + " completadas");
+
+        // 4. Mostrar todas las listas y tareas en el TextArea
+        ListaGeneral.setText(controlador.generarResumenListas());
+
+        // 5. Poner la fecha actual
+        MostrarFechaActual.setDate(new Date());
+    }
+    public java.awt.List getListaTareas() {
+        return list1;
+    }
+
+    public java.awt.TextField getBuscador() {
+        return Buscador;
+    }
+
+    public javax.swing.JProgressBar getBarraDiasRestantes() {
+        return jProgressBar1;
+    }
+    public javax.swing.JComboBox<String> getComboSeleccionarLista() {
+        return SeleccionarLista;
+    }
+
+    public java.awt.Button getBotonCompletar() {
+        return Completar;
+    }
+
+    public java.awt.Button getBotonBorrar() {
+        return Borrar;
+    }
+    public String getTareaSeleccionada() {
+        String seleccion = list1.getSelectedItem();
+            if (seleccion != null && seleccion.contains(" (")) {
+                return seleccion.split(" \\(")[0].trim(); // extrae solo el nombre
+            }
+            return seleccion;
+        }
+        public void actualizarVistaLista(String nombreLista) {
+        list1.removeAll();
+        for (Tarea t : controlador.obtenerTareasPendientes(nombreLista)) {
+            int dias = controlador.calcularDiasRestantes(t);
+            list1.add(t.getNombre() + " (Faltan " + dias + " días)");
+        }
+
+        int total = controlador.obtenerTareasLista(nombreLista).size();
+        int completadas = controlador.contarCompletadas(nombreLista);
+        Completadas.setMaximum(total);
+        Completadas.setValue(completadas);
+        Completadas.setStringPainted(true);
+        Completadas.setString(completadas + " de " + total + " completadas");
+
+        ListaGeneral.setText(controlador.generarResumenListas());
+    }
+    private void VolverActionPerformed(java.awt.event.ActionEvent evt) {
+        this.dispose(); // cierra la ventana actual
+        new MenuInicial().setVisible(true); // abre el menú principal
+    }
+
+
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button Borrar;
@@ -243,6 +367,7 @@ public class VentanaListaTareas extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser MostrarFechaActual;
     private javax.swing.JPanel Right;
     private javax.swing.JComboBox<String> SeleccionarLista;
+    private java.awt.Button Volver;
     private javax.swing.JProgressBar jProgressBar1;
     private java.awt.Label label1;
     private java.awt.Label label2;
