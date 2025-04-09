@@ -13,6 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.JFrame;
 import java.awt.event.*;
 /**
  *
@@ -21,12 +22,14 @@ import java.awt.event.*;
 public class Vista extends javax.swing.JFrame {
     private java.util.Map<String, Tarea> mapaTareas = new java.util.HashMap<>();
     private String nombreOriginalEdicion = null;    
+    private String listaOriginalEdicion = null;
     public Controlador controlador;
 
     /** Creates new form Vista */
     public Vista() {
         initComponents();
-        
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         jPanel13.setVisible(false);
         //Permite volver al menu inicial
         Volver.setLabel("Volver");
@@ -508,7 +511,8 @@ public class Vista extends javax.swing.JFrame {
         jComboBox1.setSelectedIndex(0);  // Prioridad (Baja por defecto)
         jCheckBox1.setSelected(false);   // Completado
         NombreListaTaras.setText("");    // Ponemos el campo de nombreListaTareas en blanco de nuevo
-    
+        nombreOriginalEdicion = null;   
+        listaOriginalEdicion = null;
     }
     /**
      * Permite editar el nombre de la tarea en el modo edicion
@@ -609,7 +613,8 @@ public class Vista extends javax.swing.JFrame {
      */
     public void prepareEdicion(Tarea tarea) {
         if (tarea != null) {
-        nombreOriginalEdicion = tarea.getNombre(); // ✅ guardamos el nombre original
+        nombreOriginalEdicion = tarea.getNombre(); //  guardamos el nombre original
+        listaOriginalEdicion = getNombreListaActual(); //Guardamos la lista original a la que pertenece la tarea
         jTextField1.setText(tarea.getNombre());
         jTextArea1.setText(tarea.getDescripcion());
         jSpinner1.setValue(Integer.parseInt(tarea.getPorcentajeCompletado()));
@@ -636,7 +641,13 @@ public class Vista extends javax.swing.JFrame {
     public String getNombreOriginalEdicion() {
         return nombreOriginalEdicion;
     }
-
+    /**
+     * Permite consultar la lista original a la que pertenece una tarea
+     * @return String con el nombre de la lista original
+     */
+    public String getListaOriginalEdicion() {
+        return listaOriginalEdicion;
+    }
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

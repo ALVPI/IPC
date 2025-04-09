@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.awt.event.*;
-
+import javax.swing.JFrame;
 import java.util.Date;
 
 /**
@@ -27,6 +27,8 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         
        
         initComponents();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//Evita que al cerrar la pestanna se cierre toda la aplicacion
+
         //Boton de volver
         Volver.setLabel("Volver");
         Volver.addActionListener(new java.awt.event.ActionListener() {

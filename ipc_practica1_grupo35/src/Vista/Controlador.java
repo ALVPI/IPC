@@ -73,7 +73,9 @@ public class Controlador {
         }
     }
 
-
+    /**
+     * Permite annadir una tarea a la lista de tareas
+     */
     public void addTarea() {
         String nombre = vista.getNombreTarea();
         String descripcion = vista.getDescripcionTarea();
@@ -83,20 +85,16 @@ public class Controlador {
         Date fecha = vista.getFechaTarea();
         String lista = vista.getNombreListaActual();
 
-        // Obtenemos la lista actual
+        // Detectar si estamos en modo edición
+        String nombreOriginal = vista.getNombreOriginalEdicion();
+        String listaOriginal = vista.getListaOriginalEdicion();
+        boolean enEdicion = (nombreOriginal != null && listaOriginal != null);
+
+        // Obtener tareas de la lista actual
         ArrayList<Tarea> tareas = controladorListas.obtenerTareasLista(lista);
         if (tareas == null) tareas = new ArrayList<>();
 
-        // Detectamos si estamos editando una tarea
-        String nombreOriginal = vista.getNombreOriginalEdicion();
-        boolean enEdicion = (nombreOriginal != null);
-
-        // Si estamos editando, eliminamos la anterior
-        if (enEdicion) {
-            controladorListas.eliminarTarea(lista, nombreOriginal);
-        }
-
-        // Verificamos si ya existe otra tarea con ese nombre
+        // Verificar duplicados (excepto si es la misma que estamos editando)
         for (Tarea t : tareas) {
             if (t.getNombre().equals(nombre) && (!enEdicion || !nombre.equals(nombreOriginal))) {
                 vista.showToast("⚠ Ya existe una tarea con ese nombre");
@@ -104,9 +102,16 @@ public class Controlador {
             }
         }
 
-        // Creamos la nueva tarea
+        // Crear la nueva tarea
         Tarea nueva = new Tarea(nombre, descripcion, fecha, prioridad, completado, porcentaje);
-        controladorListas.crearNuevaLista(lista); // solo la crea si no existe
+
+        // Si estamos editando, eliminar la anterior de su lista original
+        if (enEdicion) {
+            controladorListas.eliminarTarea(listaOriginal, nombreOriginal);
+        }
+
+        // Añadir la nueva tarea a la lista actual
+        controladorListas.crearNuevaLista(lista); // solo crea si no existe
         controladorListas.annadirTarea(lista, nueva);
 
         // Feedback al usuario
@@ -116,19 +121,21 @@ public class Controlador {
             vista.showToast("✅ Tarea añadida correctamente");
         }
 
-        // Actualizamos la lista visual
+        // Actualizar la vista
         vista.setTareas(controladorListas.obtenerTareasLista(lista));
-        setTareas(); // si usas esto para gráficos o stats, lo dejas
-
-        // Limpiamos los campos y modo edición
-        vista.clear();
+        setTareas(); // por si actualizas gráficos o resumen
+        vista.clear(); // limpia campos y modo edición
     }
 
 
+    /**
+     * Permite eliminar una tarea de la lista de tareas
+     * @param nombre String con el nombre de la tarea a eliminar
+     */
     public void deleteTarea(String nombre) {
         String lista = vista.getNombreListaActual();
         controladorListas.eliminarTarea(lista, nombre);
         setTareas();
-        vista.showToast("Tarea Eliminada correctamente");
+        vista.showToast("✅ Tarea Eliminada correctamente");
     }
 } 
