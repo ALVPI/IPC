@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 package Vista;
 import java.awt.KeyboardFocusManager;
 import java.util.Date;
+import Modelo.Tarea;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -23,7 +23,7 @@ public class Vista extends javax.swing.JFrame {
     /** Creates new form Vista */
     public Vista() {
         initComponents();
-        controlador = new Controlador(this);
+        
         jPanel13.setVisible(false);
         //Permite volver al menu inicial
         Volver.setLabel("Volver");
@@ -87,6 +87,8 @@ public class Vista extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        label1 = new java.awt.Label();
+        NombreListaTaras = new java.awt.TextField();
         jPanel5 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -130,7 +132,6 @@ public class Vista extends javax.swing.JFrame {
         jPanel2.setLayout(new java.awt.GridLayout(5, 0));
 
         jLabel1.setText("Nombre de la tarea");
-        jPanel4.add(jLabel1);
 
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         jTextField1.setAutoscrolls(false);
@@ -141,7 +142,49 @@ public class Vista extends javax.swing.JFrame {
                 jTextField1ActionPerformed(evt);
             }
         });
-        jPanel4.add(jTextField1);
+
+        label1.setText("Nombre de la lista"
+        );
+
+        NombreListaTaras.setText(""
+        );
+        NombreListaTaras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NombreListaTarasActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(3, 3, 3)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(label1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(5, 5, 5)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(NombreListaTaras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(50, 50, 50))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(NombreListaTaras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21))
+        );
 
         jPanel2.add(jPanel4);
 
@@ -160,14 +203,41 @@ public class Vista extends javax.swing.JFrame {
         jPanel2.add(jPanel5);
 
         jLabel4.setText("Porcentaje");
-        jPanel6.add(jLabel4);
 
         jSpinner1.setMaximumSize(new java.awt.Dimension(32767666, 32767666));
-        jPanel6.add(jSpinner1);
 
         jLabel11.setText("Fecha");
-        jPanel6.add(jLabel11);
-        jPanel6.add(jDateChooser1);
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(jLabel4)
+                .addGap(5, 5, 5)
+                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(jLabel11)
+                .addGap(5, 5, 5)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel4))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel11))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
         jPanel2.add(jPanel6);
 
@@ -299,7 +369,12 @@ public class Vista extends javax.swing.JFrame {
         jPanel13.setVisible(true);
     }
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        controlador.deleteTarea();
+        String tareaSeleccionada = getTareaActiva(); // obtienes la tarea activa
+        if (tareaSeleccionada != null) {
+            controlador.deleteTarea(tareaSeleccionada);
+        } else {
+            mostrarToast("⚠ Selecciona una tarea para eliminar");
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -307,11 +382,19 @@ public class Vista extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jList1ValueChanged
-        controlador.viewTarea();
+        String tareaSeleccionada = getTareaActiva(); 
+        if (tareaSeleccionada != null) {
+            controlador.viewTarea(tareaSeleccionada);
+        }
     }//GEN-LAST:event_jList1ValueChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        controlador.prepararEdicion();
+        String tareaSeleccionada = getTareaActiva(); // obtienes la tarea activa
+        if (tareaSeleccionada != null) {
+            controlador.prepararEdicion(tareaSeleccionada);
+        } else {
+            mostrarToast("⚠ Selecciona una tarea primero");
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void VolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolverActionPerformed
@@ -320,6 +403,9 @@ public class Vista extends javax.swing.JFrame {
         new MenuInicial().setVisible(true); // Abre el menú principal 
     }//GEN-LAST:event_VolverActionPerformed
 
+    private void NombreListaTarasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombreListaTarasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NombreListaTarasActionPerformed
     public String getTareaActiva() {
         return jList1.getSelectedValue();
     }
@@ -363,6 +449,8 @@ public class Vista extends javax.swing.JFrame {
     jSpinner1.setValue(0);           // Porcentaje (asumiendo int o similar)
     jComboBox1.setSelectedIndex(0);  // Prioridad (Baja por defecto)
     jCheckBox1.setSelected(false);   // Completado
+    NombreListaTaras.setText("");    // Ponemos el campo de nombreListaTareas en blanco de nuevo
+    
     }
     public void setNombreEdicion(String nombre) {
     jTextField1.setText(nombre);
@@ -400,12 +488,41 @@ public class Vista extends javax.swing.JFrame {
         //Cerramos el popup en ms 
         new javax.swing.Timer(350, e -> dialog.dispose()).start();
     }  
-    
-    
-    
-    
-    
+    public String getNombreListaActual() {
+        String nombre = NombreListaTaras.getText().trim();
+        return nombre.isEmpty() ? "IPC" : nombre;
+    }
+    public void mostrarTarea(Tarea tarea) {
+    if (tarea != null) {
+        jLabel6.setText(tarea.getNombre());
+        jLabel7.setText(tarea.getDescripcion());
+        jLabel8.setText("Fecha: " + tarea.getFecha().toString());
+        jLabel10.setText(tarea.getPrioridad());
+        jPanel13.setVisible(true); // muestra el panel con la descripción de la tarea
+    } else {
+        mostrarToast("⚠ Tarea no válida");
+    }
+}
+    public void prepararEdicion(Tarea tarea) {
+        if (tarea != null) {
+            jTextField1.setText(tarea.getNombre());
+            jTextArea1.setText(tarea.getDescripcion());
+            jSpinner1.setValue(Integer.parseInt(tarea.getPorcentajeCompletado()));
+            jComboBox1.setSelectedItem(tarea.getPrioridad());
+            jCheckBox1.setSelected(tarea.getEstadoTarea());
+            jDateChooser1.setDate(tarea.getFecha());
+        } else {
+            mostrarToast("⚠ No se puede editar, tarea inválida");
+        }
+    }
+    public void setControlador(Controlador controlador){
+           this.controlador = controlador;
+           controlador.setTareas();
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private java.awt.TextField NombreListaTaras;
     private java.awt.Button Volver;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -442,6 +559,7 @@ public class Vista extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private java.awt.Label label1;
     // End of variables declaration//GEN-END:variables
 
 }

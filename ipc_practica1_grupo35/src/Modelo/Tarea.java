@@ -111,7 +111,9 @@ public class Tarea {
         String fechaStr = (fecha != null) ? sdf.format(fecha) : "Sin fecha";
         return nombre + " " + fechaStr + " " + (isCompletada ? "Completada" : "Pendiente");
     }
-
+    public void setEstadoTarea(Boolean nuevoEstado){
+         isCompletada = nuevoEstado;
+    }
     
    
 }

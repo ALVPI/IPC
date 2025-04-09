@@ -9,12 +9,17 @@ package Vista;
  * @author alvpi
  */
 public class MenuInicial extends javax.swing.JFrame {
+    private VentanaListaTareas ventanaLista;
+    private ControladorListaTarea controladorListas;
 
     /**
      * Creates new form MenuInicial
      */
     public MenuInicial() {
         initComponents();
+        ventanaLista = new VentanaListaTareas();
+        controladorListas = new ControladorListaTarea(ventanaLista);
+        ventanaLista.setControlador(controladorListas);
     }
 
     /**
@@ -115,10 +120,8 @@ public class MenuInicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void EditarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarListaActionPerformed
-        VentanaListaTareas editar = new VentanaListaTareas();
-        ControladorListaTarea controlador = new ControladorListaTarea(editar);
-        editar.setControlador(controlador);  // 🔁 Aquí conectamos la lógica con la vista
-        editar.setVisible(true);
+        ventanaLista.inicializarVista(); // refresca siempre antes de mostrar
+        ventanaLista.setVisible(true);
     }//GEN-LAST:event_EditarListaActionPerformed
 
     private void EXITActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EXITActionPerformed
@@ -126,8 +129,10 @@ public class MenuInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_EXITActionPerformed
 
     private void EditarTareaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarTareaActionPerformed
-        Vista verTarea = new Vista();
-        verTarea.setVisible(true);
+         Vista vistaTareas = new Vista();
+        Controlador controlador = new Controlador(vistaTareas, controladorListas);
+        vistaTareas.setControlador(controlador);
+        vistaTareas.setVisible(true);
     }//GEN-LAST:event_EditarTareaActionPerformed
     /**
      * @param args the command line arguments

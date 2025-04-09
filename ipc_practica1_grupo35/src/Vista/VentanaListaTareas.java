@@ -18,7 +18,8 @@ import java.util.Date;
 public class VentanaListaTareas extends javax.swing.JFrame {
     //Variables privadas necesarias para que funcione el sistema 
     private ControladorListaTarea controlador;
-    
+    private String nombreListaActual = "IPC"; //nombre por defecto 
+
     /**
      * Creates new form EditarListaTareas
      */
@@ -55,6 +56,7 @@ public class VentanaListaTareas extends javax.swing.JFrame {
                 }
             }
         });
+        
 
     }
 
@@ -277,16 +279,15 @@ public class VentanaListaTareas extends javax.swing.JFrame {
             SeleccionarLista.addItem(nombre);
         }
 
+
         // 2. Mostrar tareas pendientes de la primera lista ("IPC")
         String listaSeleccionada = "IPC";
-        SeleccionarLista.setSelectedItem(listaSeleccionada);
-
+        actualizarVistaLista("IPC");
         list1.removeAll();
-        for (Tarea t : controlador.obtenerTareasPendientes(listaSeleccionada)) {
+        for (Tarea t : controlador.obtenerTareasLista(listaSeleccionada)) {
             long dias = controlador.calcularDiasRestantes(t);
             list1.add(t.getNombre() + " (Faltan " + dias + " días)");
         }
-
         // 3. Barra de progreso de tareas completadas
         int total = controlador.obtenerTareasLista(listaSeleccionada).size();
         int completadas = controlador.contarCompletadas(listaSeleccionada);
@@ -300,6 +301,21 @@ public class VentanaListaTareas extends javax.swing.JFrame {
 
         // 5. Poner la fecha actual
         MostrarFechaActual.setDate(new Date());
+        // 6. Calcular el progreso total de las tareas
+        int totalTareas = 0;
+        int completadasTareas = 0;
+
+        for (String nombreLista : controlador.obtenerNombresListas()) {
+            ArrayList<Tarea> tareas = controlador.obtenerTareasLista(nombreLista);
+            totalTareas += tareas.size();
+            completadasTareas += (int) tareas.stream().filter(Tarea::getEstadoTarea).count();
+        }
+
+        CompletadoTotal.setMaximum(totalTareas);
+        CompletadoTotal.setValue(completadasTareas);
+        CompletadoTotal.setStringPainted(true);
+        CompletadoTotal.setString(completadasTareas + " de " + totalTareas + " completadas");
+
     }
     public java.awt.List getListaTareas() {
         return list1;
@@ -329,10 +345,10 @@ public class VentanaListaTareas extends javax.swing.JFrame {
                 return seleccion.split(" \\(")[0].trim(); // extrae solo el nombre
             }
             return seleccion;
-        }
+    }
         public void actualizarVistaLista(String nombreLista) {
         list1.removeAll();
-        for (Tarea t : controlador.obtenerTareasPendientes(nombreLista)) {
+        for (Tarea t : controlador.obtenerTareasLista(nombreLista)) {
             int dias = controlador.calcularDiasRestantes(t);
             list1.add(t.getNombre() + " (Faltan " + dias + " días)");
         }
@@ -350,6 +366,31 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         this.dispose(); // cierra la ventana actual
         new MenuInicial().setVisible(true); // abre el menú principal
     }
+    /**
+     * Permite establecer el nombre de la lista 
+     * @param nombreLista  String con el nombre de la lista 
+     */
+    public void setNombreLista(String nombreLista) {
+    this.nombreListaActual = nombreLista;
+    }
+    @Override
+    
+    public void setVisible(boolean b) {
+        if (b) {
+            inicializarVista();   //Fuerzo el reinicio de la vista
+        }
+        super.setVisible(b);
+    }
+    public void actualizarVistaSoloPendientes(String nombreLista) {
+        list1.removeAll();
+        list1.clear();
+
+        for (Tarea t : controlador.obtenerTareasPendientes(nombreLista)) {
+            int dias = controlador.calcularDiasRestantes(t);
+            list1.add(t.getNombre() + " (Faltan " + dias + " días)");
+        }
+    }
+
 
 
 

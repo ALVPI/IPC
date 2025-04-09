@@ -4,6 +4,7 @@
  */
 package Vista;
 import Modelo.Tarea;
+import Modelo.GestorListaTareas;
 import Vista.VentanaListaTareas;
 import java.util.Calendar;
 import java.util.Map;
@@ -17,20 +18,25 @@ import java.util.stream.Collectors;
  * @author Pascual Alvaro
  */
 public class ControladorListaTarea {
-    private Map<String, ArrayList<Tarea>> listaTareas;
+    
     private String listaActual;
     private VentanaListaTareas vista;
+    
 
     public ControladorListaTarea(VentanaListaTareas vista) {
-        this.vista = vista;
-        this.listaTareas = new HashMap<>();
-        this.listaActual = "IPC";
-
-        inicializarTareasPorDefecto();
-        conectarVistaConEventos();
+    this.vista = vista;
+    this.listaActual = "IPC";
+    inicializarTareasPorDefecto();
+    conectarVistaConEventos();
     }
+
     //Inicializamos las tareas en la lista IPC por defecto
     private void inicializarTareasPorDefecto() {
+        // Si ya existe la lista, no volvemos a insertar las tareas por defecto que sino se buggea
+        ArrayList<Tarea> ipcExistente = GestorListaTareas.obtenerTareas("IPC");
+        if (ipcExistente != null && !ipcExistente.isEmpty()) {
+            return;
+        }
         ArrayList<Tarea> ipc = new ArrayList<>();
 
         ipc.add(new Tarea("TE 1", "Realizar un análisis de una aplicación.", crearFecha(5,3,2025), "Alta", false, "50"));
@@ -38,46 +44,36 @@ public class ControladorListaTarea {
         ipc.add(new Tarea("Boceto", "Realizar un boceto de la práctica 2.", crearFecha(30, 3, 2025), "Alta", false, "25"));
         ipc.add(new Tarea("TE 2", "Realizar una aplicación web.", crearFecha(28, 4, 2025), "Media", true, "100"));
 
-        listaTareas.put("IPC", ipc);
+        GestorListaTareas.crearListaSiNoExiste("IPC");
+        for (Tarea t : ipc) {
+            GestorListaTareas.annadirTarea("IPC", t);
+        }
+
         listaActual = "IPC";
     }
-    /**
-     * Permite establecer un nombre a las listas
-     * @return  la lista de tareas con el nombre 
-     */
-    public Set<String> obtenerNombresListas() {
-        return listaTareas.keySet();
-    }
-    /**
-     * Permite teneruna lista con las tarreas de una lista
-     * @param nombreLista la lista de la que queremos sacar las tareas
-     * @return  una nueva lista con las tareas de esa lista 
-     */
-    public ArrayList<Tarea> obtenerTareasLista(String nombreLista) {
-        return listaTareas.getOrDefault(nombreLista, new ArrayList<>());
-    }
+    
     /**
      * Permite obtener la informacion de las tareas pendientes
      * @param nombreLista la lista sobre la que queremos saber si las tareas estan pendientes o no
      * @return  unn ArrayList de tareas de esa lista
      */
     public ArrayList<Tarea> obtenerTareasPendientes(String nombreLista) {
-        return listaTareas.getOrDefault(nombreLista, new ArrayList<>())
-                .stream()
-                .filter(t -> !t.getEstadoTarea())
-                .collect(Collectors.toCollection(ArrayList::new));
+        return GestorListaTareas.obtenerTareas(nombreLista).stream()
+               .filter(t -> !t.getEstadoTarea())
+               .collect(Collectors.toCollection(ArrayList::new));
     }
+
     /**
      * Permite obtener el numero de tareas completadas de una lista
      * @param nombreLista la lista de la que queremos sacar las tareas completadas
      * @return  un entero con el numero de tareas completadas
      */
     public int contarCompletadas(String nombreLista) {
-        return (int) listaTareas.getOrDefault(nombreLista, new ArrayList<>())
-                .stream()
-                .filter(Tarea::getEstadoTarea)
-                .count();
+        return (int) GestorListaTareas.obtenerTareas(nombreLista).stream()
+               .filter(Tarea::getEstadoTarea)
+               .count();
     }
+
     /**
      * Permite calcular los dias restastenes para terminar esa tarea
      * @param tarea objeto del que queremos saber los dias restantes
@@ -94,7 +90,7 @@ public class ControladorListaTarea {
      * @param nombreTarea la tarea a completar
      */
     public void completarTarea(String nombreLista, String nombreTarea) {
-    ArrayList<Tarea> tareas = listaTareas.get(nombreLista);
+    ArrayList<Tarea> tareas = GestorListaTareas.obtenerTareas(nombreLista);
         for (Tarea t : tareas) {
             if (t.getNombre().equalsIgnoreCase(nombreTarea)) {
                 t.setIsCompletado();
@@ -102,33 +98,25 @@ public class ControladorListaTarea {
             }
         }
     }
-    /**
-     * Permite aliminar una tarea de la lista
-     * @param nombreLista La lista donde se encuentra la tarea
-     * @param nombreTarea La tarea a eliminar
-     */
-    public void eliminarTarea(String nombreLista, String nombreTarea) {
-        ArrayList<Tarea> tareas = listaTareas.get(nombreLista);
-        tareas.removeIf(t -> t.getNombre().equalsIgnoreCase(nombreTarea));
-    }
+    
+    
     /**
      * Permite generar una nueva lista de tareas
      * @param nombre de la nueva lista de tareas
      */
     public void crearNuevaLista(String nombre) {
-        if (!listaTareas.containsKey(nombre)) {
-            listaTareas.put(nombre, new ArrayList<>());
-        }
+         GestorListaTareas.crearListaSiNoExiste(nombre);
     }
+
     /**
      * Resmen de las tareas que hay en una lista de manera visual
      * @return un String con todas las tareas de la lista
      */
     public String generarResumenListas() {
         StringBuilder sb = new StringBuilder();
-        for (String nombreLista : listaTareas.keySet()) {
+        for (String nombreLista : GestorListaTareas.obtenerNombresListas()) {
             sb.append("Lista: ").append(nombreLista).append("\n");
-            for (Tarea t : listaTareas.get(nombreLista)) {
+            for (Tarea t : GestorListaTareas.obtenerTareas(nombreLista)) {
                 sb.append(" - ").append(t.getNombre()).append("\n");
             }
         }
@@ -219,7 +207,37 @@ public class ControladorListaTarea {
         }
         return null;
     }
-    
+    public void annadirTarea(String nombreLista, Tarea tarea) {
+        GestorListaTareas.annadirTarea(nombreLista, tarea);
+    }
+    /**
+     * Permite teneruna lista con las tarreas de una lista
+     * @param nombreLista la lista de la que queremos sacar las tareas
+     * @return  una nueva lista con las tareas de esa lista 
+     */
+    public ArrayList<Tarea> obtenerTareasLista(String nombreLista) {
+        return GestorListaTareas.obtenerTareas(nombreLista);
+    }
+    /**
+     * Permite establecer un nombre a las listas
+     * @return  la lista de tareas con el nombre 
+     */
+    public Set<String> obtenerNombresListas() {
+        return GestorListaTareas.obtenerNombresListas();
+    }
+    /**
+     * Permite aliminar una tarea de la lista
+     * @param nombreLista La lista donde se encuentra la tarea
+     * @param nombreTarea La tarea a eliminar
+     */
+    public void eliminarTarea(String nombreLista, String nombreTarea) {
+        ArrayList<Tarea> tareas = GestorListaTareas.obtenerTareas(nombreLista);
+        tareas.removeIf(t -> t.getNombre().equals(nombreTarea));
+    }
+    public void setListaActual(String nombreLista) {
+        this.listaActual = nombreLista;
+    }
+
 
 
 
