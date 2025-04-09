@@ -13,7 +13,7 @@ import java.util.Date;
 
 /**
  *
- * @author alvpi
+ * @author Alvaro y Pascual
  */
 public class VentanaListaTareas extends javax.swing.JFrame {
     //Variables privadas necesarias para que funcione el sistema 

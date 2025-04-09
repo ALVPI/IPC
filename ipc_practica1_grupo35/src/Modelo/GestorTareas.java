@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author alvpi y Pascual
+ * @author Alvaro y Pascual
  */
 public class GestorTareas {
     Vista vista;

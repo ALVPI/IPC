@@ -6,7 +6,7 @@ package Modelo;
 import java.util.Date;
 /**
  *
- * @author alvpi y Pascual
+ * @author Alvaro y Pascual
  */
 public class Tarea {
     private String nombre;

@@ -6,7 +6,7 @@ package Vista;
 
 /**
  *
- * @author alvpi
+ * @author Alvaro y Pascual
  */
 public class MenuInicial extends javax.swing.JFrame {
     private VentanaListaTareas ventanaLista;

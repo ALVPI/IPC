@@ -7,7 +7,7 @@ package Modelo;
 import java.util.*;
 /**
  *
- * @author alvpi
+ * @author Alvaro y Pascual
  */
 public class GestorListaTareas {
     public static Map<String, ArrayList<Tarea>> listasTareas = new HashMap<>();

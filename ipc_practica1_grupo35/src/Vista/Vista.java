@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 import java.awt.event.*;
 /**
  *
- * @author alvpi y Pascual
+ * @author Alvaro y Pascual
  */
 public class Vista extends javax.swing.JFrame {
     private java.util.Map<String, Tarea> mapaTareas = new java.util.HashMap<>();

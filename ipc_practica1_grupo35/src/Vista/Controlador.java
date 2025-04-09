@@ -14,7 +14,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 /**
  *
- * @author Alvlope y Pascual
+ * @author Alvaro y Pascual
  */
 public class Controlador {
     private Vista vista;
