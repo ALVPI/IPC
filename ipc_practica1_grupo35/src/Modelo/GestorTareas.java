@@ -91,7 +91,7 @@ public class GestorTareas {
      * @throws IllegalArgumentException si tarea es null
      * @throws IllegalStateException si la tarea no existe en lista_tareas
      */
-    public Tarea buscarTarea(Tarea tarea){
+    public Tarea searchTarea(Tarea tarea){
         if(tarea == null){
             throw new IllegalArgumentException("La tarea a buscar no puede ser null");
         }
@@ -107,7 +107,7 @@ public class GestorTareas {
      * @return la tarea que tiene ese nombre
      * @throws IllegalArgumentException si el nombre de la tarea es null
      */
-    public Tarea buscarTarea(String nombreTarea){
+    public Tarea searchTarea(String nombreTarea){
         if(nombreTarea == null){
             throw new IllegalArgumentException("el nombre de la tarea no puede ser null");
         }

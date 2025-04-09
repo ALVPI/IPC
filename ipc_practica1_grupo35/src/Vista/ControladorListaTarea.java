@@ -128,7 +128,7 @@ public class ControladorListaTarea {
         cal.set(anno, mes, dia);
         return cal.getTime();
     }
-  private void conectarVistaConEventos() {
+    private void conectarVistaConEventos() {
         // Evento: Al cambiar la selección del combo de listas.
         vista.getComboSeleccionarLista().addActionListener(e -> {
             listaActual = (String) vista.getComboSeleccionarLista().getSelectedItem();
@@ -192,8 +192,6 @@ public class ControladorListaTarea {
         });
     }
 
-
-   
     private Tarea buscarTareaPorNombre(String lista, String nombreTarea) {
         for (Tarea t : obtenerTareasLista(lista)) {
             // Comprobamos si el nombre coincide directamente
@@ -207,6 +205,11 @@ public class ControladorListaTarea {
         }
         return null;
     }
+    /**
+     * Permite annadir una tarea a una lista
+     * @param nombreLista lista donde vamos a meter la tarea como String
+     * @param tarea la Tarea a introducir
+     */
     public void annadirTarea(String nombreLista, Tarea tarea) {
         GestorListaTareas.annadirTarea(nombreLista, tarea);
     }
@@ -234,6 +237,10 @@ public class ControladorListaTarea {
         ArrayList<Tarea> tareas = GestorListaTareas.obtenerTareas(nombreLista);
         tareas.removeIf(t -> t.getNombre().equals(nombreTarea));
     }
+    /**
+     * Permite establecer la lista actual donde se va a guardar la tarea
+     * @param nombreLista String con el nombre de la lista
+     */
     public void setListaActual(String nombreLista) {
         this.listaActual = nombreLista;
     }

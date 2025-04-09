@@ -5,7 +5,6 @@
 package Vista;
 import Modelo.Tarea;
 import Modelo.GestorListaTareas;
-import Vista.Vista;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -30,44 +29,47 @@ public class Controlador {
     public void setTareas() {
         String lista = vista.getNombreListaActual();
         ArrayList<Tarea> tareas = controladorListas.obtenerTareasLista(lista);
-        String[] tmp = tareas.stream().map(Object::toString).toArray(String[]::new);
-        vista.setTareas(tmp);
+        vista.setTareas(tareas);
     }
 
     public void viewTarea(String nombre) {
         String lista = vista.getNombreListaActual();
         ArrayList<Tarea> tareas = controladorListas.obtenerTareasLista(lista);
-        boolean encontrada = false;
+
+        // Limpiar el nombre si viene con formato adicional
+        String nombreLimpio = nombre;
+        int parentesis = nombre.indexOf(" (");
+        if (parentesis != -1) {
+            nombreLimpio = nombre.substring(0, parentesis).trim();
+        }
 
         for (Tarea t : tareas) {
-            if (t.getNombre().equals(nombre)) {
-                vista.mostrarTarea(t);
-                encontrada = true;
-                break;
+            if (t.getNombre().trim().equalsIgnoreCase(nombreLimpio)) {
+                vista.showTarea(t);  
+                return;
             }
         }
 
-        if (!encontrada) {
-            vista.mostrarToast("⚠ No se ha encontrado la tarea");
-        }
+        vista.showToast("⚠ No se pudo mostrar la tarea: " + nombre);
     }
 
 
-    public void prepararEdicion(String nombre) {
+
+    public void prepareEdition(String nombre) {
         String lista = vista.getNombreListaActual();
         ArrayList<Tarea> tareas = controladorListas.obtenerTareasLista(lista);
         boolean encontrada = false;
 
         for (Tarea t : tareas) {
             if (t.getNombre().equals(nombre)) {
-                vista.prepararEdicion(t);
+                vista.prepareEdicion(t);
                 encontrada = true;
                 break;
             }
         }
 
         if (!encontrada) {
-            vista.mostrarToast("⚠ No se puede editar, tarea no encontrada");
+            vista.showToast("⚠ No se puede editar, tarea no encontrada");
         }
     }
 
@@ -75,41 +77,58 @@ public class Controlador {
     public void addTarea() {
         String nombre = vista.getNombreTarea();
         String descripcion = vista.getDescripcionTarea();
-        String porcentaje = vista.getPorcentaje();
         String prioridad = vista.getPrioridad();
-        Boolean completado = vista.getCompletado();
+        boolean completado = vista.getCompletado();
+        String porcentaje = vista.getPorcentaje();
         Date fecha = vista.getFechaTarea();
+        String lista = vista.getNombreListaActual();
 
-        if (nombre.isEmpty() || descripcion.isEmpty()) {
-            vista.mostrarToast("⚠ Rellene los campos por favor");
-            return;
+        // Obtenemos la lista actual
+        ArrayList<Tarea> tareas = controladorListas.obtenerTareasLista(lista);
+        if (tareas == null) tareas = new ArrayList<>();
+
+        // Detectamos si estamos editando una tarea
+        String nombreOriginal = vista.getNombreOriginalEdicion();
+        boolean enEdicion = (nombreOriginal != null);
+
+        // Si estamos editando, eliminamos la anterior
+        if (enEdicion) {
+            controladorListas.eliminarTarea(lista, nombreOriginal);
         }
 
-        String lista = vista.getNombreListaActual(); // aquí ya tienes IPC por defecto
-        ArrayList<Tarea> tareas = controladorListas.obtenerTareasLista(lista);
-
+        // Verificamos si ya existe otra tarea con ese nombre
         for (Tarea t : tareas) {
-            if (t.getNombre().equals(nombre)) {
-                vista.mostrarToast("⚠ Ya existe una tarea con ese nombre");
+            if (t.getNombre().equals(nombre) && (!enEdicion || !nombre.equals(nombreOriginal))) {
+                vista.showToast("⚠ Ya existe una tarea con ese nombre");
                 return;
             }
         }
 
+        // Creamos la nueva tarea
         Tarea nueva = new Tarea(nombre, descripcion, fecha, prioridad, completado, porcentaje);
-        controladorListas.crearNuevaLista(lista); // Crea la lista solo si no existe
+        controladorListas.crearNuevaLista(lista); // solo la crea si no existe
         controladorListas.annadirTarea(lista, nueva);
-        vista.mostrarToast("✅ Tarea añadida correctamente");
-        controladorListas.setListaActual(lista); // << NUEVO: actualiza referencia interna
-        vista.setTareas(controladorListas.obtenerTareasLista(lista)
-                      .stream().map(Object::toString).toArray(String[]::new));
-        setTareas();
+
+        // Feedback al usuario
+        if (enEdicion) {
+            vista.showToast("✅ Tarea editada correctamente");
+        } else {
+            vista.showToast("✅ Tarea añadida correctamente");
+        }
+
+        // Actualizamos la lista visual
+        vista.setTareas(controladorListas.obtenerTareasLista(lista));
+        setTareas(); // si usas esto para gráficos o stats, lo dejas
+
+        // Limpiamos los campos y modo edición
         vista.clear();
     }
+
 
     public void deleteTarea(String nombre) {
         String lista = vista.getNombreListaActual();
         controladorListas.eliminarTarea(lista, nombre);
         setTareas();
-        vista.mostrarToast("Tarea Eliminada correctamente");
+        vista.showToast("Tarea Eliminada correctamente");
     }
 } 

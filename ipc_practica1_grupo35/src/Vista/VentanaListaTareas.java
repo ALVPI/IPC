@@ -267,28 +267,33 @@ public class VentanaListaTareas extends javax.swing.JFrame {
             }
         });
     }
+    /**
+     * Permite establecer el controlador que vamos a emplear
+     * @param controlador 
+     */
     public void setControlador(ControladorListaTarea controlador) {
         this.controlador = controlador;
         inicializarVista(); 
     }
-    
-    public void inicializarVista() {
-        // 1. Mostrar las listas en el combo
+    /**
+     * Permite inicializar la gui 
+     */
+    public void inicializarVista() {    
+        //VAmos por partes Pascual
+        //Primero debemos mostrar las listas en el combo
         SeleccionarLista.removeAllItems();
         for (String nombre : controlador.obtenerNombresListas()) {
             SeleccionarLista.addItem(nombre);
         }
-
-
-        // 2. Mostrar tareas pendientes de la primera lista ("IPC")
-        String listaSeleccionada = "IPC";
+        // Ahora moastramos tareas pendientes de la primera lista ("IPC")
+        String listaSeleccionada = "IPC"; //La por defecto
         actualizarVistaLista("IPC");
         list1.removeAll();
         for (Tarea t : controlador.obtenerTareasLista(listaSeleccionada)) {
             long dias = controlador.calcularDiasRestantes(t);
             list1.add(t.getNombre() + " (Faltan " + dias + " días)");
         }
-        // 3. Barra de progreso de tareas completadas
+        // Movida de la barra de cuan completas estan las tareas de la lista
         int total = controlador.obtenerTareasLista(listaSeleccionada).size();
         int completadas = controlador.contarCompletadas(listaSeleccionada);
         Completadas.setMaximum(total);
@@ -296,12 +301,12 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         Completadas.setStringPainted(true);
         Completadas.setString(completadas + " de " + total + " completadas");
 
-        // 4. Mostrar todas las listas y tareas en el TextArea
+        // Mostrar todas las listas en la zona de texto
         ListaGeneral.setText(controlador.generarResumenListas());
 
-        // 5. Poner la fecha actual
+        // Setteamos fecha inical 
         MostrarFechaActual.setDate(new Date());
-        // 6. Calcular el progreso total de las tareas
+        // Calculamos cuan completas estan todas las tarreas en general 
         int totalTareas = 0;
         int completadasTareas = 0;
 
@@ -317,28 +322,52 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         CompletadoTotal.setString(completadasTareas + " de " + totalTareas + " completadas");
 
     }
+    /**
+     * Permite consultar la lista de tareas
+     * @return una lista con todas las tareas
+     */
     public java.awt.List getListaTareas() {
         return list1;
     }
-
+    /**
+     * Permite consultar el buscador
+     * @return  la casilla de texto del buscador
+     */
     public java.awt.TextField getBuscador() {
         return Buscador;
     }
-
+    /**
+     * Permite consultar los dias que le quedan a la tarea en una barra
+     * @return la barra que indica el progreso 
+     */
     public javax.swing.JProgressBar getBarraDiasRestantes() {
         return jProgressBar1;
     }
+    /**
+     * Permite seleccionar uan lista con el menu de arriba a la izquierda (desplegable hacia abajo)
+     * @return la lista seleccionada por el usuario.
+     */
     public javax.swing.JComboBox<String> getComboSeleccionarLista() {
         return SeleccionarLista;
     }
-
+    /**
+     * Permite consultar el boton completar
+     * @return el boton que permite compeltar tareas
+     */
     public java.awt.Button getBotonCompletar() {
         return Completar;
     }
-
+   /**
+     * Permite consultar el boton borrar
+     * @return el boton que permite eliminar tareas
+     */
     public java.awt.Button getBotonBorrar() {
         return Borrar;
     }
+    /**
+     * Permite consultar la tarea seleccionada
+     * @return El nombre de la tarea como string
+     */
     public String getTareaSeleccionada() {
         String seleccion = list1.getSelectedItem();
             if (seleccion != null && seleccion.contains(" (")) {
@@ -346,7 +375,11 @@ public class VentanaListaTareas extends javax.swing.JFrame {
             }
             return seleccion;
     }
-        public void actualizarVistaLista(String nombreLista) {
+    /**
+     * Permite actualizar la lista que estamos viendo 
+     * @param nombreLista la lista a modificar
+     */
+    public void actualizarVistaLista(String nombreLista) {
         list1.removeAll();
         for (Tarea t : controlador.obtenerTareasLista(nombreLista)) {
             int dias = controlador.calcularDiasRestantes(t);
@@ -381,6 +414,10 @@ public class VentanaListaTareas extends javax.swing.JFrame {
         }
         super.setVisible(b);
     }
+    /**
+     * Permite mostrar las tareas pendientes
+     * @param nombreLista 
+     */
     public void actualizarVistaSoloPendientes(String nombreLista) {
         list1.removeAll();
         list1.clear();

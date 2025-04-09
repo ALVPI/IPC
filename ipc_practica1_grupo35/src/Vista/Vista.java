@@ -4,7 +4,9 @@
  */
 package Vista;
 import java.awt.KeyboardFocusManager;
+import Modelo.Tarea;
 import java.util.Date;
+import java.util.List;
 import Modelo.Tarea;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JDialog;
@@ -17,7 +19,8 @@ import java.awt.event.*;
  * @author alvpi y Pascual
  */
 public class Vista extends javax.swing.JFrame {
-    
+    private java.util.Map<String, Tarea> mapaTareas = new java.util.HashMap<>();
+    private String nombreOriginalEdicion = null;    
     public Controlador controlador;
 
     /** Creates new form Vista */
@@ -219,8 +222,8 @@ public class Vista extends javax.swing.JFrame {
                 .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(jLabel11)
-                .addGap(5, 5, 5)
-                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -373,7 +376,7 @@ public class Vista extends javax.swing.JFrame {
         if (tareaSeleccionada != null) {
             controlador.deleteTarea(tareaSeleccionada);
         } else {
-            mostrarToast("⚠ Selecciona una tarea para eliminar");
+            showToast("⚠ Selecciona una tarea para eliminar");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -382,18 +385,21 @@ public class Vista extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jList1ValueChanged
-        String tareaSeleccionada = getTareaActiva(); 
-        if (tareaSeleccionada != null) {
-            controlador.viewTarea(tareaSeleccionada);
+        // Solo reaccionamos cuando el usuario ha terminado de hacer la selección
+        if (!evt.getValueIsAdjusting()) {
+            String tareaSeleccionada = getTareaActiva();
+            if (tareaSeleccionada != null && controlador != null) {
+                controlador.viewTarea(tareaSeleccionada);
+            }
         }
     }//GEN-LAST:event_jList1ValueChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         String tareaSeleccionada = getTareaActiva(); // obtienes la tarea activa
         if (tareaSeleccionada != null) {
-            controlador.prepararEdicion(tareaSeleccionada);
+            controlador.prepareEdition(tareaSeleccionada);
         } else {
-            mostrarToast("⚠ Selecciona una tarea primero");
+            showToast("⚠ Selecciona una tarea primero");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -407,74 +413,157 @@ public class Vista extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_NombreListaTarasActionPerformed
     public String getTareaActiva() {
-        return jList1.getSelectedValue();
+        String seleccionado = jList1.getSelectedValue();
+        if (seleccionado == null) return null;
+
+        int parenIndex = seleccionado.indexOf(" (");
+        if (parenIndex != -1) {
+            return seleccionado.substring(0, parenIndex).trim();
+        }
+
+        return seleccionado.trim();
     }
-    
+    /**
+     * Consulta el nombre de la tarea
+     * @return  String con el nombre de la tarea
+     */
     public String getNombreTarea() {
         return jTextField1.getText();
     }
+    /**
+     * Consulta la descripcion de la tarea
+     * @return String con la descripcion de la tarea
+     */
     public String getDescripcionTarea() {
         return jTextArea1.getText();
     }
+    /**
+     * Consulta el porcentaje en el que se ha hecho la tarea
+     * @return String con el porcentaje entre 1 y 99
+     */
     public String getPorcentaje() {
         int valorIntroducido = (Integer) jSpinner1.getValue();
         if (valorIntroducido < 1) return "1";
         if (valorIntroducido > 99) return "99";
         return jSpinner1.getValue().toString();
     }
+    /**
+     * Consulta la prioridad de la tarea
+     * @return String con la prioridad de la tarea
+     */
     public String getPrioridad() {
         return jComboBox1.getSelectedItem().toString();
     }
+    /**
+     * Consulta si la tarea se ha completado o no
+     * @return Boolean true si se ha completado false en caso contrario
+     */
     public Boolean getCompletado() {
         return jCheckBox1.isSelected();
     }
-    
-    public void setTareas(String[] tareas) {
-        jList1.setListData(tareas);
-        
+    /**
+     * Permite establecer una lista de tarea
+     * @param tareas 
+     */
+    public void setTareas(List<Tarea> tareas) {
+       
+        String[] nombres = new String[tareas.size()];
+        for (int i = 0; i < tareas.size(); i++) {
+            Tarea t = tareas.get(i);
+            String nombre = t.getNombre(); // mostramos solo el nombre (sin porcentaje)
+            nombres[i] = nombre;
+            mapaTareas.put(nombre, t); // guardamos la tarea real para recuperarla luego
     }
-    
-    public void setNombre(String tmp) {
-        jLabel6.setText(tmp);
+
+    jList1.setListData(nombres); // ahora jList1 sigue siendo <String>
     }
-    public void setPrio(String tmp) {
-        jLabel10.setText(tmp);
+    /**
+     * Permite establecer el nombre de la tarea
+     * @param nombre El nombre temporal de l
+     */
+    public void setNombre(String nombre) {
+        jLabel6.setText(nombre);
     }
-    public void setDes(String tmp) {
-        jLabel7.setText(tmp);
+    /**
+     * Permmite establecer la prioridad de la tarea
+     * @param prioridad string con la nueva prioridad
+     */
+    public void setPrio(String prioridad) {
+        jLabel10.setText(prioridad);
     }
+    /**
+     * Permite establecer la descripcion
+     * @param newdescripcion string con la nueva descripcion de la tarea
+     */
+    public void setDes(String newdescripcion) {
+        jLabel7.setText(newdescripcion);
+    }
+    /**
+     * Permite limpiar todos los valors de las variables graficas
+     */
     public void clear() {
-    jTextField1.setText("");         // Nombre
-    jTextArea1.setText("");          // Descripción
-    jSpinner1.setValue(0);           // Porcentaje (asumiendo int o similar)
-    jComboBox1.setSelectedIndex(0);  // Prioridad (Baja por defecto)
-    jCheckBox1.setSelected(false);   // Completado
-    NombreListaTaras.setText("");    // Ponemos el campo de nombreListaTareas en blanco de nuevo
+        jTextField1.setText("");         // Nombre
+        jTextArea1.setText("");          // Descripción
+        jSpinner1.setValue(0);           // Porcentaje (asumiendo int o similar)
+        jComboBox1.setSelectedIndex(0);  // Prioridad (Baja por defecto)
+        jCheckBox1.setSelected(false);   // Completado
+        NombreListaTaras.setText("");    // Ponemos el campo de nombreListaTareas en blanco de nuevo
     
     }
+    /**
+     * Permite editar el nombre de la tarea en el modo edicion
+     * @param nombre string con el nuevo nombre de la tarea
+     */
     public void setNombreEdicion(String nombre) {
     jTextField1.setText(nombre);
     }
+    /**
+     * Permite editar la descripcion de la tarea en el modo edicion
+     * @param des  la descripcion de la tarea como string
+     */
     public void setDescripcionEdicion(String des) {
         jTextArea1.setText(des);
     }
+    /**
+     * Permite establecer la prioridad en el modo edicion
+     * @param prio  la nueva prioridad como string
+     */
     public void setPrioridadEdicion(String prio) {
         jComboBox1.setSelectedItem(prio);
     }
+    /**
+     * Permite establecer el porcentaje de en el modo edicion
+     * @param porcentaje de completitud de la tarea como string
+     */
     public void setPorcentajeEdicion(String porcentaje) {
         jSpinner1.setValue(Integer.parseInt(porcentaje));
     }
+    /**
+     * Permite establecer si se ha completado la tarea en el modo edicion
+     * @param completo boolean true si completo false en caso contrario
+     */
     public void setCompletadoEdicion(boolean completo) {
         jCheckBox1.setSelected(completo);
     }
-    //Tema fecha
+    /**
+     * Permite consultar la fecha de la tarea
+     * @return una fecha
+     */
     public Date getFechaTarea() {
         return jDateChooser1.getDate();
     }
+    /**
+     * Establecer la fecha en el modo edicion
+     * @param fecha Date con la fecha nueva
+     */
     public void setFechaEdicion(Date fecha) {
        jDateChooser1.setDate(fecha);
     }
-    public void mostrarToast(String mensaje) {
+    /**
+     * Permite mostrar un mensaje cuando el usuario hace una accion
+     * @param mensaje String a mostrar
+     */
+    public void showToast(String mensaje) {
         JDialog dialog = new JDialog();
         //maquetación del popup
         dialog.setUndecorated(true);
@@ -488,38 +577,67 @@ public class Vista extends javax.swing.JFrame {
         //Cerramos el popup en ms 
         new javax.swing.Timer(350, e -> dialog.dispose()).start();
     }  
+    /**
+     * Pemite consultar el nombre de la lista actual
+     * @return el nombre de la lista Como String
+     */
     public String getNombreListaActual() {
         String nombre = NombreListaTaras.getText().trim();
-        return nombre.isEmpty() ? "IPC" : nombre;
+        return nombre.isEmpty() ? "IPC" : nombre; //operador ternario no me apetece escribr un if else si esta vacio nombre ipc sino el nombre
     }
-    public void mostrarTarea(Tarea tarea) {
-    if (tarea != null) {
-        jLabel6.setText(tarea.getNombre());
-        jLabel7.setText(tarea.getDescripcion());
-        jLabel8.setText("Fecha: " + tarea.getFecha().toString());
-        jLabel10.setText(tarea.getPrioridad());
-        jPanel13.setVisible(true); // muestra el panel con la descripción de la tarea
-    } else {
-        mostrarToast("⚠ Tarea no válida");
-    }
-}
-    public void prepararEdicion(Tarea tarea) {
+    /**
+     * Permite mostar en la gui la info de la tarea 
+     * @param tarea 
+     */
+    public void showTarea(Tarea tarea) {
         if (tarea != null) {
-            jTextField1.setText(tarea.getNombre());
-            jTextArea1.setText(tarea.getDescripcion());
-            jSpinner1.setValue(Integer.parseInt(tarea.getPorcentajeCompletado()));
-            jComboBox1.setSelectedItem(tarea.getPrioridad());
-            jCheckBox1.setSelected(tarea.getEstadoTarea());
-            jDateChooser1.setDate(tarea.getFecha());
+            jLabel6.setText(tarea.getNombre());
+            jLabel7.setText(tarea.getDescripcion());
+            jLabel8.setText("Fecha: " + tarea.getFecha().toString());
+            jLabel10.setText(tarea.getPrioridad());
+            jPanel13.setVisible(true);
+            jPanel13.revalidate();
+            jPanel13.repaint(); 
         } else {
-            mostrarToast("⚠ No se puede editar, tarea inválida");
+            showToast("⚠ Tarea no válida");
+            jPanel13.setVisible(false);
         }
     }
+    /**
+     * Permite preparar la edicion de la tarea
+     * @param tarea Tarea a editar
+     */
+    public void prepareEdicion(Tarea tarea) {
+        if (tarea != null) {
+        nombreOriginalEdicion = tarea.getNombre(); // ✅ guardamos el nombre original
+        jTextField1.setText(tarea.getNombre());
+        jTextArea1.setText(tarea.getDescripcion());
+        jSpinner1.setValue(Integer.parseInt(tarea.getPorcentajeCompletado()));
+        jComboBox1.setSelectedItem(tarea.getPrioridad());
+        jCheckBox1.setSelected(tarea.getEstadoTarea());
+        jDateChooser1.setDate(tarea.getFecha());
+        } else {
+        showToast("⚠ No se puede editar, tarea inválida");
+
+        }
+    }
+    /**
+     * Permite establecer e iniciar el controlador para la vista
+     * @param controlador  Controlador a emplear 
+     */
     public void setControlador(Controlador controlador){
            this.controlador = controlador;
            controlador.setTareas();
     }
+    /**
+     * Nos permite consultar el nombreOriginal de la tareae
+     * @return String con el nombre
+     */
+    public String getNombreOriginalEdicion() {
+        return nombreOriginalEdicion;
+    }
 
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.TextField NombreListaTaras;
